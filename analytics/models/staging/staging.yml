@@ -1,0 +1,42 @@
+models:
+  - name: stg_job_postings
+    description: Cleaned job postings, excluding source rows marked with an error.
+    columns:
+      - name: job_id
+        description: Identifier of the job posting.
+      - name: job_title
+        description: Title of the job posting.
+      - name: company_name
+        description: Company name with surrounding whitespace removed.
+      - name: job_location
+        description: Location associated with the job posting.
+      - name: job_via
+        description: Job board or source, with a leading "via " prefix removed.
+      - name: job_posted_at
+        description: Timestamp or date when the job was posted.
+      - name: job_salary
+        description: Salary information provided for the job posting.
+      - name: job_schedule_type
+        description: Schedule or employment type for the job posting.
+      - name: job_work_from_home
+        description: Indicates whether the job can be done from home.
+      - name: job_extensions_raw
+        description: Raw extension details associated with the job posting.
+      - name: searched_at
+        description: Timestamp when the source record was searched.
+      - name: search_date
+        description: Date associated with the source search.
+      - name: search_term
+        description: Search term used to find the job posting.
+      - name: search_location
+        description: Location used in the source search.
+
+  - name: stg_job_skills
+    description: Cleaned skills associated with job postings.
+    columns:
+      - name: job_id
+        description: Identifier of the job posting associated with the skill.
+      - name: skill_id
+        description: Identifier of the skill.
+      - name: skill_keyword
+        description: Skill keyword with surrounding whitespace removed.
