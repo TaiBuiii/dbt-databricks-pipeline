@@ -14,14 +14,20 @@ models:
         description: Job board or source, with a leading "via " prefix removed.
       - name: job_posted_at
         description: Timestamp or date when the job was posted.
-      - name: job_salary
-        description: Salary information provided for the job posting.
+      - name: min_salary
+        description: Parsed lower end of the salary range, scaled for K or M suffixes.
+      - name: max_salary
+        description: Parsed upper end of the salary range, scaled for K or M suffixes.
+      - name: salary_unit
+        description: Pay period extracted from the salary text, such as month, year, day, or hour.
+      - name: currency_unit
+        description: Currency code or symbol extracted from the salary text; defaults to USD.
+      - name: average_salary
+        description: Average of the parsed minimum and maximum salary values.
       - name: job_schedule_type
         description: Schedule or employment type for the job posting.
       - name: job_work_from_home
         description: Indicates whether the job can be done from home.
-      - name: job_extensions_raw
-        description: Raw extension details associated with the job posting.
       - name: searched_at
         description: Timestamp when the source record was searched.
       - name: search_date
@@ -30,6 +36,16 @@ models:
         description: Search term used to find the job posting.
       - name: search_location
         description: Location used in the source search.
+      - name: has_10_hours_ago
+        description: Indicates whether the extensions contain the "10 hours ago" label.
+      - name: has_full_time_and_part_time
+        description: Indicates whether the extensions contain the "Full-time and Part-time" label.
+      - name: has_dental_insurance
+        description: Indicates whether the extensions mention dental insurance.
+      - name: has_health_insurance
+        description: Indicates whether the extensions mention health insurance.
+      - name: has_paid_time_off
+        description: Indicates whether the extensions mention paid time off.
 
   - name: stg_job_skills
     description: Cleaned skills associated with job postings.
