@@ -1,13 +1,27 @@
-{% set roles = dbt_utils.get_column_values(table=ref('stg_job_postings'), column='search_term') %}
-
-{% for role in roles %}
-    SELECT 
-        search_term,
-        COUNT(*) AS postings
-    FROM {{ ref('stg_job_postings') }}
-    WHERE search_term = '{{ role | title() }}'
-    GROUP BY search_term
-    {{ "UNION ALL" if not loop.last}}
-
-{% endfor %}
-
+WITH job_postings AS(
+    SELECT job_id
+    FROM {{ ref('fct_job_postings') }}
+    {% if var("job_title") %}
+        WHERE search_term = '{{ var("job_title") }}'
+    {% endif %}
+),
+bridge AS (
+    SELECT * FROM {{ ref('bridge_job_skills') }}
+),
+skills AS (
+    SELECT * FROM {{ ref('dim_skill') }}
+)
+SELECT 
+    display_name,
+    category,
+    COUNT(DISTINCT job_id) AS demand_count,
+    ROUND(
+        COUNT(DISTINCT job_id) * 100.0
+        / (SELECT COUNT(DISTINCT job_id) FROM job_postings),
+        1
+    ) AS demand_pct
+FROM bridge
+INNER JOIN skills USING (skill_id)
+INNER JOIN job_postings USING (job_id)
+GROUP BY display_name, category
+ORDER BY demand_count DESC
