@@ -23,7 +23,7 @@ cleaned AS(
         job_title,
         TRIM(company_name) AS company_name,
         job_location,
-        REGEXP_REPLACE(job_via, '^via ', '') AS job_via,
+        REGEXP_REPLACE(job_via, '^via ', '') AS source_platform,
         job_posted_at,
         {{ parse_salary('min') }} AS min_salary,
         {{ parse_salary('max') }} AS max_salary,

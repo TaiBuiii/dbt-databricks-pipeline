@@ -10,7 +10,7 @@ models:
         description: Company name with surrounding whitespace removed.
       - name: job_location
         description: Location associated with the job posting.
-      - name: job_via
+      - name: source_platform
         description: Job board or source, with a leading "via " prefix removed.
       - name: job_posted_at
         description: Timestamp or date when the job was posted.
