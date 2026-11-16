@@ -1,0 +1,11 @@
+models:
+  - name: int_skill_observations
+    description: Counts distinct job postings associated with each skill.
+    columns:
+      - name: skill_id
+        description: Identifier of the skill.
+        data_tests:
+          - unique
+          - not_null
+      - name: postings_with_skill
+        description: Number of distinct job postings that list the skill.

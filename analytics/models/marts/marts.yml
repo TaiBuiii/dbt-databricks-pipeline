@@ -1,0 +1,103 @@
+models:
+  - name: fct_job_postings
+    description: Latest available job-posting record per job ID, with parsed salary and benefit attributes.
+    columns:
+      - name: job_id
+        description: Identifier of the job posting.
+        data_tests:
+          - unique
+          - not_null
+      - name: job_title
+        description: Title of the job posting.
+      - name: search_term
+        description: Search term used to find the job posting.
+      - name: company_name
+        description: Company associated with the job posting.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_company')
+                field: company_name
+      - name: job_location
+        description: Location associated with the job posting.
+      - name: source_platform
+        description: Job board or source where the posting was found.
+      - name: job_schedule_type
+        description: Schedule or employment type for the job posting.
+      - name: job_work_from_home
+        description: Indicates whether the job can be done from home.
+      - name: search_date
+        description: Date associated with the source search.
+      - name: min_salary
+        description: Parsed lower end of the salary range.
+      - name: max_salary
+        description: Parsed upper end of the salary range.
+      - name: average_salary
+        description: Average of the parsed minimum and maximum salary values.
+      - name: salary_unit
+        description: Pay period extracted from the salary text, such as month, year, day, or hour.
+      - name: currency_unit
+        description: Currency code or symbol extracted from the salary text.
+      - name: has_health_insurance
+        description: Indicates whether the posting mentions health insurance.
+      - name: has_dental_insurance
+        description: Indicates whether the posting mentions dental insurance.
+      - name: has_paid_time_off
+        description: Indicates whether the posting mentions paid time off.
+
+  - name: dim_skill
+    description: Skill catalog enriched with the number of job postings that list each skill.
+    columns:
+      - name: skill_id
+        description: Identifier of the skill.
+        data_tests:
+          - unique
+          - not_null
+      - name: display_name
+        description: Human-readable name of the skill.
+      - name: category
+        description: Category assigned to the skill.
+      - name: subcategory
+        description: Subcategory assigned to the skill.
+      - name: postings_with_skill
+        description: Number of distinct job postings that list the skill; defaults to zero.
+
+  - name: dim_company
+    description: Company-level job-posting counts and average annual USD salary.
+    columns:
+      - name: company_name
+        description: Company name.
+        data_tests:
+          - unique
+          - not_null
+      - name: total_job_postings
+        description: Number of job postings associated with the company.
+      - name: avg_salary_year
+        description: Average salary for postings with USD currency and yearly pay period.
+
+  - name: bridge_job_skills
+    description: Associations between job postings and the skills listed for each posting.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ['job_id', 'skill_id']
+    columns:
+      - name: job_id
+        description: Identifier of the job posting.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('fct_job_postings')
+                field: job_id
+      - name: skill_id
+        description: Identifier of the associated skill.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_skill')
+                field: skill_id
+      - name: skill_keyword
+        description: Skill keyword from the source posting.

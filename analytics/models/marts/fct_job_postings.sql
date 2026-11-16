@@ -15,7 +15,7 @@ incremental_data AS(
     FROM source
     {% if is_incremental() %}
     WHERE source.search_date > (
-        SELECT MAX(search_date) AS max_search_date
+        SELECT COALESCE(MAX(search_date), DATE '1990-01-01') AS max_search_date
         FROM {{ this }}
     )
     {% endif %}

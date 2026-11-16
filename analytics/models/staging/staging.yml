@@ -26,14 +26,26 @@ models:
         description: Average of the parsed minimum and maximum salary values.
       - name: job_schedule_type
         description: Schedule or employment type for the job posting.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['Part-time', 'Full-time', 'Contractor', 'Intern']
+              config:
+                severity: warn
       - name: job_work_from_home
         description: Indicates whether the job can be done from home.
       - name: searched_at
         description: Timestamp when the source record was searched.
+        data_tests:
+          - not_null
       - name: search_date
         description: Date associated with the source search.
       - name: search_term
         description: Search term used to find the job posting.
+        data_tests: 
+          - accepted_values:
+              arguments:
+                values: ['Data Engineer', 'Data Analyst', 'Data Scientist']
       - name: search_location
         description: Location used in the source search.
       - name: has_10_hours_ago
@@ -52,7 +64,29 @@ models:
     columns:
       - name: job_id
         description: Identifier of the job posting associated with the skill.
+        data_tests:
+          - not_null
       - name: skill_id
         description: Identifier of the skill.
+        data_tests:
+          - not_null
       - name: skill_keyword
         description: Skill keyword with surrounding whitespace removed.
+
+unit_tests:
+  - name: test_parse_salary_shape
+    description: Validates salary ranges, single salary values, and missing salary values.
+    model: stg_job_postings
+    given:
+      - input: source('jobs', 'raw_job_postings')
+        format: dict
+        rows:
+          - {job_id: "job-1", job_salary: "100K–186K a year"}
+          - {job_id: "job-2", job_salary: "32.50 an hour"}
+          - {job_id: "job-3", job_salary: null}
+    expect:
+      format: dict
+      rows:
+        - {job_id: "job-1", min_salary: 100000, max_salary: 186000, average_salary: 143000, salary_unit: year, currency_unit: USD}
+        - {job_id: "job-2", min_salary: 32.50, max_salary: 32.50, average_salary: 32.50, salary_unit: hour, currency_unit: USD}
+        - {job_id: "job-3", min_salary: null, max_salary: null, average_salary: null, salary_unit: null, currency_unit: USD}
